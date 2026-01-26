@@ -19,7 +19,6 @@
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "bradlc.vscode-tailwindcss",
-        "GraphQL.vscode-graphql",
         "GraphQL.vscode-graphql-syntax",
         "ms-vscode.vscode-typescript-next",
         "formulahendry.auto-rename-tag",
@@ -46,7 +45,7 @@
     }
   },
 
-  "postCreateCommand": "npm install && cp -n .env.local.sample .env.local || true",
+  "postCreateCommand": "npm install && if [ ! -f .env.local ]; then cp .env.local.sample .env.local; fi",
 
   "remoteUser": "node"
 }
