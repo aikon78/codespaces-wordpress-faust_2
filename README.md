@@ -4,6 +4,18 @@ This repository contains a starter kit to get you up and running quickly on [WP 
 
 ## Getting Started 🚀
 
+### Quick Start with GitHub Codespaces
+
+The fastest way to get started is with GitHub Codespaces:
+
+1. Click the **Code** button on this repository
+2. Select the **Codespaces** tab
+3. Click **Create codespace on main**
+4. Once the Codespace is ready, configure your `.env.local` file with your WordPress URL
+5. Run `npm run dev` to start the development server
+
+### Getting Started on WP Engine's Platform
+
 To get started on WP Engine's Platform please follow the docs here [https://developers.wpengine.com/docs/atlas/getting-started/create-app/](https://developers.wpengine.com/docs/atlas/getting-started/create-app/)
 
 ## Project Structure
@@ -82,7 +94,6 @@ At WP Engine, we have a strong community built around headless WordPress to supp
 - [Faust.js Documentation](https://faustjs.org/docs/)
 - [Headless Platform Documentation](https://wpengine.com/headless-wordpress/)
 - [WPGraphQL Documentation](https://developers.wpengine.com/docs/atlas/overview/)
-
 
 ## Contributions
 
