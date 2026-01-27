@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/typescript-node:20
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity
+    network_mode: service:wordpress
+    environment:
+      - NEXT_PUBLIC_WORDPRESS_URL=http://localhost:8080
+      - NEXT_PUBLIC_SITE_URL=http://localhost:3000
+
+  wordpress:
+    image: wordpress:latest
+    ports:
+      - "8080:80"
+      - "3000:3000"
+      - "3306:3306"
+      - "8081:8081"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DEBUG: 1
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_ENVIRONMENT_TYPE', 'local');
+        define('FAUSTWP_SECRET_KEY', 'your-secret-key-here');
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./wordpress-config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - db_data:/var/lib/mysql
+    command: '--default-authentication-plugin=mysql_native_password'
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: rootpassword
+      PMA_ARBITRARY: 1
+    depends_on:
+      - db
+    network_mode: service:wordpress
+
+volumes:
+  wordpress_data:
+  db_data:

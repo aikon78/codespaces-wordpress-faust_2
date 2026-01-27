@@ -26,10 +26,13 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env*.local
+.env
 
 # vercel
 .vercel
+
+# WordPress
+wordpress/
+wp-content/
+*.log
