@@ -8,8 +8,8 @@ services:
     command: sleep infinity
     network_mode: service:wordpress
     environment:
-      - NEXT_PUBLIC_WORDPRESS_URL=http://localhost:8080
-      - NEXT_PUBLIC_SITE_URL=http://localhost:3000
+      - NEXT_PUBLIC_WORDPRESS_URL=https://symmetrical-barnacle-g7xj6p95473wrrw-8080.app.github.dev
+      - NEXT_PUBLIC_SITE_URL=https://symmetrical-barnacle-g7xj6p95473wrrw-3000.app.github.dev
 
   wordpress:
     image: wordpress:latest
