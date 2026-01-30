@@ -6,18 +6,21 @@ services:
     volumes:
       - ..:/workspace:cached
     command: sleep infinity
-    network_mode: service:wordpress
+    ports:
+      - "3000:3000"
     environment:
-      - NEXT_PUBLIC_WORDPRESS_URL=https://symmetrical-barnacle-g7xj6p95473wrrw-8080.app.github.dev
-      - NEXT_PUBLIC_SITE_URL=https://symmetrical-barnacle-g7xj6p95473wrrw-3000.app.github.dev
+      - NEXT_PUBLIC_WORDPRESS_URL=http://localhost:8080
+      - NEXT_PUBLIC_SITE_URL=http://localhost:3000
+    depends_on:
+      wordpress:
+        condition: service_healthy
+    networks:
+      - devcontainer
 
   wordpress:
     image: wordpress:latest
     ports:
       - "8080:80"
-      - "3000:3000"
-      - "3306:3306"
-      - "8081:8081"
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: wordpress
@@ -31,10 +34,21 @@ services:
       - wordpress_data:/var/www/html
       - ./wordpress-config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    networks:
+      - devcontainer
 
   db:
     image: mysql:8.0
+    ports:
+      - "3306:3306"
     environment:
       MYSQL_DATABASE: wordpress
       MYSQL_USER: wordpress
@@ -43,17 +57,33 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     command: '--default-authentication-plugin=mysql_native_password'
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - devcontainer
 
   phpmyadmin:
     image: phpmyadmin:latest
+    ports:
+      - "8081:80"
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
       MYSQL_ROOT_PASSWORD: rootpassword
       PMA_ARBITRARY: 1
     depends_on:
-      - db
-    network_mode: service:wordpress
+      db:
+        condition: service_healthy
+    networks:
+      - devcontainer
+
+networks:
+  devcontainer:
+    driver: bridge
 
 volumes:
   wordpress_data:
