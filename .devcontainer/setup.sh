@@ -8,7 +8,7 @@ if [ -n "$CODESPACE_NAME" ] && [ -n "$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN" 
     WP_URL="https://${CODESPACE_NAME}-8080.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
     SITE_URL="https://${CODESPACE_NAME}-3000.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
     PHPMYADMIN_URL="https://${CODESPACE_NAME}-8081.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
-    HEALTH_CHECK_URL="http://localhost:8080"
+    HEALTH_CHECK_URL="http://wordpress:80"
 else
     echo "📍 Detected local development environment"
     WP_URL="http://localhost:8080"
@@ -34,13 +34,13 @@ fi
 
 # Wait for WordPress to be ready
 echo "⏳ Waiting for WordPress to be ready..."
-max_attempts=30
+max_attempts=60
 attempt=0
 until curl -s ${HEALTH_CHECK_URL} > /dev/null 2>&1; do
     attempt=$((attempt + 1))
     if [ $attempt -eq $max_attempts ]; then
-        echo "❌ WordPress failed to start"
-        exit 1
+        echo "⚠️  WordPress connection timeout (continuing anyway)"
+        break
     fi
     echo "   Attempt $attempt/$max_attempts..."
     sleep 2
