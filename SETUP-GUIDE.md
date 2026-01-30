@@ -1,4 +1,4 @@
-# Guida Setup Completo - Faust.js in GitHub Codespaces
+# Guida Completa al Setup - Faust.js in GitHub Codespaces
 
 Questa guida ti aiuta a configurare un progetto Faust.js basato su https://faustjs.org/docs/how-to/basic-setup/ che funziona correttamente in GitHub Codespaces.
 

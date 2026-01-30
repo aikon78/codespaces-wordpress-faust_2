@@ -147,7 +147,7 @@ docker-compose -f .devcontainer/docker-compose.yml down -v
 
 ### Aggiungi plugin WordPress
 
-1. Accedi a WordPress admin (http://localhost:8080/wp-admin)
+1. Accedi a WordPress admin tramite l'URL della porta 8080 (dal pannello PORTS)
 2. Installa i plugin necessari
 3. I plugin consigliati per headless:
    - FaustWP (già richiesto)
@@ -160,9 +160,9 @@ Non serve installare temi complessi - WordPress funziona solo come backend!
 
 ## 🔄 Workflow di Sviluppo
 
-1. Crea contenuti in WordPress (http://localhost:8080/wp-admin)
+1. Crea contenuti in WordPress admin (usa l'URL della porta 8080)
 2. Sviluppa template in Next.js (cartella `wp-templates/`)
-3. Testa su http://localhost:3000
+3. Testa sull'URL della porta 3000
 4. Commit e push su GitHub
 
 ## 💡 Tips
