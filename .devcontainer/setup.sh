@@ -3,24 +3,32 @@
 echo "🚀 Setting up WordPress + Faust.js Development Environment..."
 
 # Detect if running in Codespaces and set URLs accordingly
-if [ -n "$CODESPACE_NAME" ]; then
+if [ -n "$CODESPACE_NAME" ] && [ -n "$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN" ]; then
     echo "📍 Detected GitHub Codespaces environment"
     WP_URL="https://${CODESPACE_NAME}-8080.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
     SITE_URL="https://${CODESPACE_NAME}-3000.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
     PHPMYADMIN_URL="https://${CODESPACE_NAME}-8081.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
+    HEALTH_CHECK_URL="http://localhost:8080"
 else
     echo "📍 Detected local development environment"
     WP_URL="http://localhost:8080"
     SITE_URL="http://localhost:3000"
     PHPMYADMIN_URL="http://localhost:8081"
+    HEALTH_CHECK_URL="http://localhost:8080"
 fi
 
 # Create .env.local if it doesn't exist
 if [ ! -f .env.local ]; then
     echo "📝 Creating .env.local file..."
     cp .env.local.sample .env.local
-    sed -i "s|NEXT_PUBLIC_WORDPRESS_URL=.*|NEXT_PUBLIC_WORDPRESS_URL=${WP_URL}|" .env.local
-    sed -i "s|NEXT_PUBLIC_SITE_URL=.*|NEXT_PUBLIC_SITE_URL=${SITE_URL}|" .env.local
+    # Use a cross-platform sed approach
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i '' "s|NEXT_PUBLIC_WORDPRESS_URL=.*|NEXT_PUBLIC_WORDPRESS_URL=${WP_URL}|" .env.local
+        sed -i '' "s|NEXT_PUBLIC_SITE_URL=.*|NEXT_PUBLIC_SITE_URL=${SITE_URL}|" .env.local
+    else
+        sed -i "s|NEXT_PUBLIC_WORDPRESS_URL=.*|NEXT_PUBLIC_WORDPRESS_URL=${WP_URL}|" .env.local
+        sed -i "s|NEXT_PUBLIC_SITE_URL=.*|NEXT_PUBLIC_SITE_URL=${SITE_URL}|" .env.local
+    fi
     echo "FAUST_SECRET_KEY=your-secret-key-here" >> .env.local
 fi
 
@@ -28,7 +36,7 @@ fi
 echo "⏳ Waiting for WordPress to be ready..."
 max_attempts=30
 attempt=0
-until curl -s http://localhost:8080 > /dev/null 2>&1; do
+until curl -s ${HEALTH_CHECK_URL} > /dev/null 2>&1; do
     attempt=$((attempt + 1))
     if [ $attempt -eq $max_attempts ]; then
         echo "❌ WordPress failed to start"
