@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   app:
-    image: mcr.microsoft.com/devcontainers/typescript-node:20
+    image: ://mcr.microsoft.com
     volumes:
       - ..:/workspace:cached
     command: sleep infinity
@@ -11,8 +11,8 @@ services:
     environment:
       - NEXT_PUBLIC_WORDPRESS_URL=${NEXT_PUBLIC_WORDPRESS_URL:-http://localhost:8080}
       - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
-      - CODESPACE_NAME=${CODESPACE_NAME}
-      - GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN=${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}
+      - CODESPACE_NAME
+      - GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN
     depends_on:
       wordpress:
         condition: service_healthy
@@ -39,11 +39,12 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      # L'immagine ufficiale non sempre ha curl; usiamo PHP per verificare la connessione locale
+      test: ["CMD", "php", "-r", "echo file_get_contents('http://localhost/wp-login.php') ? 0 : 1;"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 40s
+      start_period: 30s
     networks:
       - devcontainer
 
@@ -56,16 +57,17 @@ services:
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: wordpress
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_PWD: rootpassword
     volumes:
       - db_data:/var/lib/mysql
+    # Necessario per compatibilità con client PHP vecchi; mysql_native_password è deprecato da MySQL 8.4+
     command: "--default-authentication-plugin=mysql_native_password"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
+      # Verifichiamo che il database sia pronto a ricevere connessioni
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 20s
     networks:
       - devcontainer
 
@@ -77,7 +79,6 @@ services:
       PMA_HOST: db
       PMA_PORT: 3306
       MYSQL_ROOT_PASSWORD: rootpassword
-      PMA_ARBITRARY: 1
     depends_on:
       db:
         condition: service_healthy
