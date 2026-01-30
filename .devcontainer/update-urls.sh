@@ -6,6 +6,12 @@ if [ -n "$CODESPACE_NAME" ] && [ -n "$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN" 
     
     echo "🔄 Updating WordPress URLs to: ${WP_URL}"
     
+    # Check if mysql client is available
+    if ! command -v mysql &> /dev/null; then
+        echo "⚠️  MySQL client not installed, skipping URL update"
+        exit 0
+    fi
+    
     # Wait a moment for WordPress to be ready
     sleep 3
     
@@ -16,5 +22,7 @@ EOF
     
     if [ $? -eq 0 ]; then
         echo "✅ WordPress URLs updated"
+    else
+        echo "⚠️  Database not ready yet (will retry on next start)"
     fi
 fi
