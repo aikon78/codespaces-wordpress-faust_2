@@ -32,17 +32,6 @@ services:
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_ENVIRONMENT_TYPE', 'local');
         define('FAUSTWP_SECRET_KEY', 'your-secret-key-here');
-
-        // Auto-detect correct URL from HTTP request (critical for Codespaces)
-        if (isset($_SERVER['HTTP_HOST'])) {
-            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-            if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
-                $protocol = 'https';
-            }
-            $current_url = $protocol . '://' . $_SERVER['HTTP_HOST'];
-            define('WP_HOME', $current_url);
-            define('WP_SITEURL', $current_url);
-        }
     volumes:
       - wordpress_data:/var/www/html
       - ./wordpress-config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
