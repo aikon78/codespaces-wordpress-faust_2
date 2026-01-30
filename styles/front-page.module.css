@@ -51,7 +51,8 @@
   overflow-wrap: break-word;
   white-space: normal;
 }
-.information h1, .information h2 {
+.information h1,
+.information h2 {
   font-size: 2rem;
   margin: 1rem 0;
 }
