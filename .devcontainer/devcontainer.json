@@ -53,6 +53,8 @@
   },
 
   "postCreateCommand": "npm install && chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
+
+  "postStartCommand": "chmod +x .devcontainer/update-urls.sh && .devcontainer/update-urls.sh",
   
   "remoteUser": "node",
   

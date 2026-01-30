@@ -47,7 +47,29 @@ until curl -s ${HEALTH_CHECK_URL} > /dev/null 2>&1; do
 done
 
 echo ""
-echo "✅ Setup complete!"
+echo "✅ WordPress is ready!"
+
+# Update WordPress URLs in database (critical for Codespaces)
+if [ -n "$CODESPACE_NAME" ]; then
+    echo "🔧 Updating WordPress URLs in database..."
+    
+    # Install mysql-client if not present
+    if ! command -v mysql &> /dev/null; then
+        echo "📦 Installing MySQL client..."
+        sudo apt-get update -qq && sudo apt-get install -y -qq mysql-client > /dev/null 2>&1
+    fi
+    
+    # Update the database
+    mysql -h wordpress -u wordpress -pwordpress wordpress 2>/dev/null << EOF || echo "⚠️  Database update skipped (WordPress not initialized yet)"
+UPDATE wp_options SET option_value = '${WP_URL}' WHERE option_name = 'siteurl';
+UPDATE wp_options SET option_value = '${WP_URL}' WHERE option_name = 'home';
+EOF
+    
+    if [ $? -eq 0 ]; then
+        echo "✅ WordPress URLs updated to: ${WP_URL}"
+    fi
+fi
+
 echo ""
 echo "📋 Next steps:"
 echo "   1. Access WordPress at: ${WP_URL}"
