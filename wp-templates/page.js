@@ -51,7 +51,6 @@ export default function SinglePage(props) {
     return <p>No pages have been published</p>;
   }
 
-
   const siteData = siteDataQuery?.data?.generalSettings || {};
   const menuItems = headerMenuDataQuery?.data?.primaryMenuItems?.nodes || {
     nodes: [],
@@ -80,7 +79,6 @@ export default function SinglePage(props) {
     </>
   );
 }
-
 
 SinglePage.queries = [
   {

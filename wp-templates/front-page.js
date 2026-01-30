@@ -15,7 +15,6 @@ export default function FrontPage(props) {
     return <>Loading...</>;
   }
 
-
   const siteDataQuery = useQuery(SITE_DATA_QUERY) || {};
   const headerMenuDataQuery = useQuery(HEADER_MENU_QUERY) || {};
 

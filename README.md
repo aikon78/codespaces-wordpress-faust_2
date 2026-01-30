@@ -2,7 +2,25 @@
 
 This repository contains a starter kit to get you up and running quickly on [WP Engine's Headless Platform](https://wpengine.com/headless-wordpress/) with a WordPress site skeleton for more advanced developers.
 
-## Getting Started 🚀
+## 🚀 GitHub Codespaces Ready
+
+This project is configured to work out-of-the-box in GitHub Codespaces with:
+
+- **WordPress** (headless backend)
+- **MySQL** (database)
+- **Next.js + Faust.js** (frontend)
+- **phpMyAdmin** (database management)
+
+**Important:** In Codespaces, WordPress URLs are dynamically configured - you cannot use localhost!
+
+### Quick Start in Codespaces
+
+1. Open this repository in GitHub Codespaces
+2. Wait for automatic setup to complete
+3. Follow the step-by-step guide in [SETUP-GUIDE.md](./SETUP-GUIDE.md) (Italian)
+4. Or see [README-CODESPACES.md](./README-CODESPACES.md) for quick reference (Italian)
+
+## Getting Started on WP Engine 🚀
 
 To get started on WP Engine's Platform please follow the docs here [https://developers.wpengine.com/docs/atlas/getting-started/create-app/](https://developers.wpengine.com/docs/atlas/getting-started/create-app/)
 
@@ -82,7 +100,6 @@ At WP Engine, we have a strong community built around headless WordPress to supp
 - [Faust.js Documentation](https://faustjs.org/docs/)
 - [Headless Platform Documentation](https://wpengine.com/headless-wordpress/)
 - [WPGraphQL Documentation](https://developers.wpengine.com/docs/atlas/overview/)
-
 
 ## Contributions
 

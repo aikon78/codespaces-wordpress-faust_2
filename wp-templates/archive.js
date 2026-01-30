@@ -86,7 +86,7 @@ export default function ArchivePage(props) {
       variables: {
         first: BATCH_SIZE,
         after: posts.pageInfo.endCursor,
-        uri: currentUri
+        uri: currentUri,
       },
       updateQuery: (prevResult, { fetchMoreResult }) => {
         if (!fetchMoreResult) return prevResult;
