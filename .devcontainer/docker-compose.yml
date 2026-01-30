@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   app:
@@ -32,6 +32,17 @@ services:
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_ENVIRONMENT_TYPE', 'local');
         define('FAUSTWP_SECRET_KEY', 'your-secret-key-here');
+
+        // Auto-detect correct URL from HTTP request (critical for Codespaces)
+        if (isset($_SERVER['HTTP_HOST'])) {
+            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+            if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+                $protocol = 'https';
+            }
+            $current_url = $protocol . '://' . $_SERVER['HTTP_HOST'];
+            define('WP_HOME', $current_url);
+            define('WP_SITEURL', $current_url);
+        }
     volumes:
       - wordpress_data:/var/www/html
       - ./wordpress-config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
@@ -59,7 +70,7 @@ services:
       MYSQL_PWD: rootpassword
     volumes:
       - db_data:/var/lib/mysql
-    command: '--default-authentication-plugin=mysql_native_password'
+    command: "--default-authentication-plugin=mysql_native_password"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
       interval: 10s
