@@ -1,89 +1,80 @@
 #!/bin/bash
+set -e
 
-echo "🚀 Setting up WordPress + Faust.js Development Environment..."
+echo "🚀 Faust.js + WordPress Setup"
 
-# Detect if running in Codespaces and set URLs accordingly
-if [ -n "$CODESPACE_NAME" ] && [ -n "$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN" ]; then
-    echo "📍 Detected GitHub Codespaces environment"
-    WP_URL="https://${CODESPACE_NAME}-8080.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
-    SITE_URL="https://${CODESPACE_NAME}-3000.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
-    PHPMYADMIN_URL="https://${CODESPACE_NAME}-8081.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
-    HEALTH_CHECK_URL="http://wordpress:80"
+# Determina gli URL SUBITO
+if [ -n "$CODESPACE_NAME" ]; then
+    WP_URL="https://${CODESPACE_NAME}-8080.app.github.dev"
+    SITE_URL="https://${CODESPACE_NAME}-3000.app.github.dev"
 else
-    echo "📍 Detected local development environment"
     WP_URL="http://localhost:8080"
     SITE_URL="http://localhost:3000"
-    PHPMYADMIN_URL="http://localhost:8081"
-    HEALTH_CHECK_URL="http://localhost:8080"
 fi
 
-# Create .env.local if it doesn't exist
-if [ ! -f .env.local ]; then
-    echo "📝 Creating .env.local file..."
-    cp .env.local.sample .env.local
-    # Use a cross-platform sed approach
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' "s|NEXT_PUBLIC_WORDPRESS_URL=.*|NEXT_PUBLIC_WORDPRESS_URL=${WP_URL}|" .env.local
-        sed -i '' "s|NEXT_PUBLIC_SITE_URL=.*|NEXT_PUBLIC_SITE_URL=${SITE_URL}|" .env.local
-    else
-        sed -i "s|NEXT_PUBLIC_WORDPRESS_URL=.*|NEXT_PUBLIC_WORDPRESS_URL=${WP_URL}|" .env.local
-        sed -i "s|NEXT_PUBLIC_SITE_URL=.*|NEXT_PUBLIC_SITE_URL=${SITE_URL}|" .env.local
+echo "WordPress: $WP_URL"
+echo "Next.js:   $SITE_URL"
+echo ""
+
+# IMPORTANTE: Crea il file .env DENTRO .devcontainer/ per docker-compose
+ENV_FILE=".devcontainer/.env"
+echo "📝 Creating $ENV_FILE for docker-compose..."
+cat > "$ENV_FILE" << ENVEOF
+WORDPRESS_URL=${WP_URL}
+NEXT_PUBLIC_WORDPRESS_URL=${WP_URL}
+NEXT_PUBLIC_SITE_URL=${SITE_URL}
+ENVEOF
+
+echo "✅ $ENV_FILE created"
+echo ""
+
+# IMPORTANTE: Esporta le variabili per il shell corrente
+export WORDPRESS_URL="${WP_URL}"
+export NEXT_PUBLIC_WORDPRESS_URL="${WP_URL}"
+export NEXT_PUBLIC_SITE_URL="${SITE_URL}"
+
+echo "📋 Environment variables exported:"
+echo "   WORDPRESS_URL=${WP_URL}"
+echo "   NEXT_PUBLIC_WORDPRESS_URL=${WP_URL}"
+echo "   NEXT_PUBLIC_SITE_URL=${SITE_URL}"
+echo ""
+
+# Crea .env.local per il Next.js app (nella root del workspace)
+ENV_LOCAL_FILE=".env.local"
+cat > "$ENV_LOCAL_FILE" << ENVEOF
+NEXT_PUBLIC_WORDPRESS_URL=${WP_URL}
+NEXT_PUBLIC_SITE_URL=${SITE_URL}
+FAUST_SECRET_KEY=your-secret-key-here
+ENVEOF
+
+echo "✅ $ENV_LOCAL_FILE created for Next.js"
+echo ""
+
+# Se la cartella wordpress è vuota, scarica i file
+if [ ! -f "wordpress/index.php" ]; then
+    echo "📥 Downloading WordPress files..."
+    mkdir -p wordpress
+    cd wordpress
+    
+    # Scarica WordPress 6 latest
+    curl -s https://wordpress.org/latest.zip -o wp-latest.zip
+    unzip -q wp-latest.zip
+    
+    # Sposta i file da wordpress/ alla root, ma esclude wp-content (se esiste già)
+    if [ -d "wordpress/wp-content" ] && [ -d "../wordpress/wp-content" ]; then
+        # wp-content esiste già, non sovrascrivere
+        rm -rf wordpress/wp-content
     fi
-    echo "FAUST_SECRET_KEY=your-secret-key-here" >> .env.local
+    
+    mv wordpress/* .
+    rm -rf wordpress wp-latest.zip
+    
+    # Copia wp-config-sample.php e prepara per Docker
+    cp wp-config-sample.php wp-config.php
+    
+    cd ..
+    echo "✅ WordPress files downloaded"
+    echo ""
 fi
 
-# Wait for WordPress to be ready
-echo "⏳ Waiting for WordPress to be ready..."
-max_attempts=60
-attempt=0
-until curl -s ${HEALTH_CHECK_URL} > /dev/null 2>&1; do
-    attempt=$((attempt + 1))
-    if [ $attempt -eq $max_attempts ]; then
-        echo "⚠️  WordPress connection timeout (continuing anyway)"
-        break
-    fi
-    echo "   Attempt $attempt/$max_attempts..."
-    sleep 2
-done
-
-echo ""
-echo "✅ WordPress is ready!"
-
-# Update WordPress URLs in database (critical for Codespaces)
-if [ -n "$CODESPACE_NAME" ]; then
-    echo "🔧 Updating WordPress URLs in database..."
-    
-    # Install mysql-client if not present
-    if ! command -v mysql &> /dev/null; then
-        echo "📦 Installing MySQL client..."
-        sudo apt-get update -qq && sudo apt-get install -y -qq mysql-client > /dev/null 2>&1
-    fi
-    
-    # Update the database
-    mysql -h wordpress -u wordpress -pwordpress wordpress 2>/dev/null << EOF || echo "⚠️  Database update skipped (WordPress not initialized yet)"
-UPDATE wp_options SET option_value = '${WP_URL}' WHERE option_name = 'siteurl';
-UPDATE wp_options SET option_value = '${WP_URL}' WHERE option_name = 'home';
-EOF
-    
-    if [ $? -eq 0 ]; then
-        echo "✅ WordPress URLs updated to: ${WP_URL}"
-    fi
-fi
-
-echo ""
-echo "📋 Next steps:"
-echo "   1. Access WordPress at: ${WP_URL}"
-echo "   2. Complete WordPress installation"
-echo "   3. Install FaustWP plugin from WordPress admin:"
-echo "      - Go to Plugins > Add New"
-echo "      - Search for 'FaustWP'"
-echo "      - Install and activate"
-echo "   4. Configure FaustWP in WordPress Settings > Headless"
-echo "   5. Copy the secret key to .env.local"
-echo "   6. Start Next.js with: npm run dev"
-echo ""
-echo "🔗 Useful URLs:"
-echo "   - WordPress: ${WP_URL}"
-echo "   - Next.js: ${SITE_URL}"
-echo "   - phpMyAdmin: ${PHPMYADMIN_URL}"
-echo ""
+echo "✅ Setup complete - WordPress will use: $WP_URL"

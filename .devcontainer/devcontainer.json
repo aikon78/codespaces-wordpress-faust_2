@@ -38,7 +38,6 @@
         "bmewburn.vscode-intelephense-client"
       ],
       "settings": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
           "source.fixAll.eslint": "explicit"
@@ -49,7 +48,7 @@
 
   "postCreateCommand": "npm install && chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
 
-  "postStartCommand": "chmod +x .devcontainer/update-urls.sh && .devcontainer/update-urls.sh",
+  "postStartCommand": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
 
   "remoteUser": "node"
 }
