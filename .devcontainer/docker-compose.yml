@@ -2,9 +2,9 @@ version: "3.8"
 
 services:
   app:
-    image: ://mcr.microsoft.com
+    image: mcr.microsoft.com/devcontainers/typescript-node:20
     volumes:
-      - ..:/workspace:cached
+      - ..:/workspaces/codespaces-wordpress-faust_2:cached
     command: sleep infinity
     ports:
       - "3000:3000"

@@ -2,7 +2,7 @@
   "name": "WordPress + Faust.js Development",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
-  "workspaceFolder": "/workspace",
+  "workspaceFolder": "/workspaces/codespaces-wordpress-faust_2",
 
   "forwardPorts": [3000, 8080, 3306, 8081],
 
@@ -51,13 +51,5 @@
 
   "postStartCommand": "chmod +x .devcontainer/update-urls.sh && .devcontainer/update-urls.sh",
 
-  "remoteUser": "node",
-
-  "features": {
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "20"
-    },
-    "ghcr.io/devcontainers/features/git:1": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {}
-  }
+  "remoteUser": "node"
 }
