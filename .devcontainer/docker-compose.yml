@@ -26,13 +26,15 @@ services:
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_DEBUG: 0
-      WORDPRESS_URL: ${WORDPRESS_URL}
       WORDPRESS_CONFIG_EXTRA: |
-        define('WP_HOME', '${WORDPRESS_URL}');
-        define('WP_SITEURL', '${WORDPRESS_URL}');
+        /* Forzare gli URL solo se definiti nelle variabili d'ambiente */
+        if (getenv('WORDPRESS_URL')) {
+          define('WP_HOME', getenv('WORDPRESS_URL'));
+          define('WP_SITEURL', getenv('WORDPRESS_URL'));
+        }
         define('FORCE_SSL_ADMIN', false);
-        define('FORCE_SSL', false);
         define('AUTOMATIC_UPDATER_DISABLED', true);
+      WORDPRESS_URL: ${WORDPRESS_URL:-http://localhost:8080}
     volumes:
       - ../wordpress:/var/www/html:cached
     depends_on:

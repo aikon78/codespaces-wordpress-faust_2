@@ -46,9 +46,13 @@
     }
   },
 
-  "postCreateCommand": "npm install && chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
+  "postCreateCommand": "npm install && chmod +x .devcontainer/*.sh && .devcontainer/install-docker.sh && .devcontainer/setup.sh",
 
   "postStartCommand": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
 
-  "remoteUser": "node"
+  "remoteUser": "node",
+
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind"
+  ]
 }
