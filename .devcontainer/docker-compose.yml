@@ -37,7 +37,7 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "test -f /var/www/html/wp-config.php || exit 1"]
+      test: ["CMD-SHELL", "test -f /var/www/html/index.php && pgrep apache2 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -58,7 +58,7 @@ services:
       - db_data:/var/lib/mysql
     command: "--default-authentication-plugin=mysql_native_password"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_ROOT_PASSWORD mysqladmin ping -h localhost -u root"]
       interval: 10s
       timeout: 5s
       retries: 5
