@@ -2,7 +2,7 @@
   "name": "WordPress + Faust.js Development",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
-  "workspaceFolder": "/workspace",
+  "workspaceFolder": "/workspaces/codespaces-wordpress-faust_2",
   
   "forwardPorts": [
     3000,
@@ -43,7 +43,6 @@
         "bmewburn.vscode-intelephense-client"
       ],
       "settings": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
           "source.fixAll.eslint": "explicit"

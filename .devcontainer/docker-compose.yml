@@ -1,10 +1,9 @@
-version: "3.8"
 
 services:
   app:
     image: mcr.microsoft.com/devcontainers/typescript-node:20
     volumes:
-      - ..:/workspace:cached
+      - ..:/workspaces/codespaces-wordpress-faust_2:cached
     command: sleep infinity
     ports:
       - "3000:3000"
@@ -14,8 +13,7 @@ services:
       - CODESPACE_NAME=${CODESPACE_NAME}
       - GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN=${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}
     depends_on:
-      wordpress:
-        condition: service_healthy
+      - wordpress
     networks:
       - devcontainer
 
@@ -36,14 +34,7 @@ services:
       - wordpress_data:/var/www/html
       - ./wordpress-config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     depends_on:
-      db:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 40s
+      - db
     networks:
       - devcontainer
 
@@ -79,8 +70,7 @@ services:
       MYSQL_ROOT_PASSWORD: rootpassword
       PMA_ARBITRARY: 1
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     networks:
       - devcontainer
 
