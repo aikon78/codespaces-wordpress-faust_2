@@ -4,90 +4,71 @@ services:
   app:
     image: mcr.microsoft.com/devcontainers/typescript-node:20
     volumes:
-      - ..:/workspace:cached
+      - ..:/workspaces/codespaces-wordpress-faust_2:cached
     command: sleep infinity
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_WORDPRESS_URL=${NEXT_PUBLIC_WORDPRESS_URL:-http://localhost:8080}
-      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
-      - CODESPACE_NAME=${CODESPACE_NAME}
-      - GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN=${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}
+      - NEXT_PUBLIC_WORDPRESS_URL=${NEXT_PUBLIC_WORDPRESS_URL}
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
     depends_on:
-      wordpress:
-        condition: service_healthy
+      - wordpress
     networks:
-      - devcontainer
+      - default
 
   wordpress:
-    image: wordpress:latest
+    image: wordpress:6-apache
     ports:
       - "8080:80"
     environment:
-      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
-      WORDPRESS_DEBUG: 1
+      WORDPRESS_DEBUG: 0
       WORDPRESS_CONFIG_EXTRA: |
-        define('WP_ENVIRONMENT_TYPE', 'local');
-        define('FAUSTWP_SECRET_KEY', 'your-secret-key-here');
+        /* Forzare gli URL solo se definiti nelle variabili d'ambiente */
+        if (getenv('WORDPRESS_URL')) {
+          define('WP_HOME', getenv('WORDPRESS_URL'));
+          define('WP_SITEURL', getenv('WORDPRESS_URL'));
+        }
+        define('FORCE_SSL_ADMIN', false);
+        define('AUTOMATIC_UPDATER_DISABLED', true);
+      WORDPRESS_URL: ${WORDPRESS_URL:-http://localhost:8080}
     volumes:
-      - wordpress_data:/var/www/html
-      - ./wordpress-config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+      - ../wordpress:/var/www/html:cached
     depends_on:
-      db:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 40s
+      - db
     networks:
-      - devcontainer
+      - default
 
   db:
     image: mysql:8.0
-    ports:
-      - "3306:3306"
     environment:
       MYSQL_DATABASE: wordpress
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: wordpress
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_PWD: rootpassword
+      MYSQL_ROOT_PASSWORD: root
     volumes:
-      - db_data:/var/lib/mysql
-    command: "--default-authentication-plugin=mysql_native_password"
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+      - db:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
     networks:
-      - devcontainer
+      - default
 
   phpmyadmin:
-    image: phpmyadmin:latest
+    image: phpmyadmin
     ports:
       - "8081:80"
     environment:
       PMA_HOST: db
-      PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: rootpassword
-      PMA_ARBITRARY: 1
-    depends_on:
-      db:
-        condition: service_healthy
+      PMA_USER: wordpress
+      PMA_PASSWORD: wordpress
     networks:
-      - devcontainer
+      - default
 
 networks:
-  devcontainer:
-    driver: bridge
+  default:
 
 volumes:
-  wordpress_data:
-  db_data:
+  db:
+

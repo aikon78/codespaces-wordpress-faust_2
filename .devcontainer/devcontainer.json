@@ -2,15 +2,10 @@
   "name": "WordPress + Faust.js Development",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
-  "workspaceFolder": "/workspace",
-  
-  "forwardPorts": [
-    3000,
-    8080,
-    3306,
-    8081
-  ],
-  
+  "workspaceFolder": "/workspaces/codespaces-wordpress-faust_2",
+
+  "forwardPorts": [3000, 8080, 3306, 8081],
+
   "portsAttributes": {
     "3000": {
       "label": "Next.js Frontend",
@@ -43,7 +38,6 @@
         "bmewburn.vscode-intelephense-client"
       ],
       "settings": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
           "source.fixAll.eslint": "explicit"
@@ -52,17 +46,13 @@
     }
   },
 
-  "postCreateCommand": "npm install && chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
+  "postCreateCommand": "npm install && chmod +x .devcontainer/*.sh && .devcontainer/install-docker.sh && .devcontainer/setup.sh",
 
-  "postStartCommand": "chmod +x .devcontainer/update-urls.sh && .devcontainer/update-urls.sh",
-  
+  "postStartCommand": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
+
   "remoteUser": "node",
-  
-  "features": {
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "20"
-    },
-    "ghcr.io/devcontainers/features/git:1": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {}
-  }
+
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind"
+  ]
 }
