@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   app:
     image: mcr.microsoft.com/devcontainers/typescript-node:20
@@ -39,7 +37,7 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      test: ["CMD-SHELL", "test -f /var/www/html/wp-config.php || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -56,12 +54,11 @@ services:
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: wordpress
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_PWD: rootpassword
     volumes:
       - db_data:/var/lib/mysql
     command: "--default-authentication-plugin=mysql_native_password"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
       interval: 10s
       timeout: 5s
       retries: 5
