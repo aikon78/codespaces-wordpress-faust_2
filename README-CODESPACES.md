@@ -85,25 +85,38 @@ npm run format
 
 ## 🐛 Troubleshooting
 
+### Container creation errors
+Se ricevi errori durante la creazione dei container:
+```bash
+# Rimuovi tutti i container e volumi esistenti
+docker compose -f .devcontainer/docker-compose.yml down -v
+
+# Riavvia i container
+docker compose -f .devcontainer/docker-compose.yml up -d
+
+# Verifica lo stato
+docker compose -f .devcontainer/docker-compose.yml ps
+```
+
 ### WordPress non si avvia
 ```bash
 # Controlla i container Docker
 docker ps
 
 # Riavvia WordPress
-docker-compose -f .devcontainer/docker-compose.yml restart wordpress
+docker compose -f .devcontainer/docker-compose.yml restart wordpress
 ```
 
 ### Database connection error
 ```bash
 # Riavvia il database
-docker-compose -f .devcontainer/docker-compose.yml restart db
+docker compose -f .devcontainer/docker-compose.yml restart db
 ```
 
 ### Reset completo
 ```bash
 # Attenzione: cancella tutti i dati!
-docker-compose -f .devcontainer/docker-compose.yml down -v
+docker compose -f .devcontainer/docker-compose.yml down -v
 # Poi riavvia Codespaces
 ```
 
