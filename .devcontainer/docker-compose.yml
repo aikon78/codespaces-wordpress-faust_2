@@ -27,9 +27,22 @@ services:
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_DEBUG: 1
+      CODESPACE_NAME: ${CODESPACE_NAME}
+      GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN: ${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}
       WORDPRESS_CONFIG_EXTRA: |
+        if (getenv('CODESPACE_NAME') && getenv('GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN')) {
+          $$wp_url = 'https://' . getenv('CODESPACE_NAME') . '-8080.' . getenv('GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN');
+          define('WP_HOME', $$wp_url);
+          define('WP_SITEURL', $$wp_url);
+        } else {
+          define('WP_HOME', 'http://localhost:8080');
+          define('WP_SITEURL', 'http://localhost:8080');
+        }
         define('WP_ENVIRONMENT_TYPE', 'local');
         define('FAUSTWP_SECRET_KEY', 'your-secret-key-here');
+        define('FS_METHOD', 'direct');
+        define('WP_AUTO_UPDATE_CORE', false);
+        define('WP_MEMORY_LIMIT', '512M');
     volumes:
       - wordpress_data:/var/www/html
       - ./wordpress-config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
@@ -47,16 +60,9 @@ services:
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: wordpress
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_PWD: rootpassword
     volumes:
       - db_data:/var/lib/mysql
     command: "--default-authentication-plugin=mysql_native_password"
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
     networks:
       - devcontainer
 

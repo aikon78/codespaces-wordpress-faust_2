@@ -14,7 +14,7 @@ else
     WP_URL="http://localhost:8080"
     SITE_URL="http://localhost:3000"
     PHPMYADMIN_URL="http://localhost:8081"
-    HEALTH_CHECK_URL="http://localhost:8080"
+    HEALTH_CHECK_URL="http://localhost:8090"
 fi
 
 # Create .env.local if it doesn't exist
