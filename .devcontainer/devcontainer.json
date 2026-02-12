@@ -2,6 +2,12 @@
   "name": "WordPress + Faust.js Development",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
+  "runServices": [
+    "db",
+    "wordpress",
+    "phpmyadmin",
+    "app"
+  ],
   "workspaceFolder": "/workspaces/codespaces-wordpress-faust_2",
   
   "forwardPorts": [
@@ -14,19 +20,23 @@
   "portsAttributes": {
     "3000": {
       "label": "Next.js Frontend",
-      "onAutoForward": "notify"
+      "onAutoForward": "notify",
+      "visibility": "public"
     },
     "8080": {
       "label": "WordPress",
-      "onAutoForward": "notify"
+      "onAutoForward": "notify",
+      "visibility": "public"
     },
     "8081": {
       "label": "phpMyAdmin",
-      "onAutoForward": "ignore"
+      "onAutoForward": "ignore",
+      "visibility": "public"
     },
     "3306": {
       "label": "MySQL",
-      "onAutoForward": "ignore"
+      "onAutoForward": "ignore",
+      "visibility": "private"
     }
   },
 
@@ -51,11 +61,13 @@
     }
   },
 
-  "postCreateCommand": "npm install && chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
-
-  "postStartCommand": "chmod +x .devcontainer/update-urls.sh && .devcontainer/update-urls.sh",
+  "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
   
   "remoteUser": "node",
+
+  "remoteEnv": {
+    "DOCKER_API_VERSION": "1.43"
+  },
   
   "features": {
     "ghcr.io/devcontainers/features/node:1": {

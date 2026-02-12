@@ -1,6 +1,7 @@
 # WordPress + Faust.js Codespaces Setup
 
 Questo progetto è configurato per funzionare su GitHub Codespaces con:
+
 - **WordPress** (backend headless)
 - **MySQL** (database)
 - **Next.js + Faust.js** (frontend)
@@ -17,8 +18,8 @@ Questo progetto è configurato per funzionare su GitHub Codespaces con:
      - Lingua: Italiano
      - Titolo sito: Il tuo sito
      - Username/Password: crea le credenziali admin
-   
 3. **Installa FaustWP Plugin**
+
    ```
    - Login WordPress admin
    - Vai su Plugin > Aggiungi nuovo
@@ -27,6 +28,7 @@ Questo progetto è configurato per funzionare su GitHub Codespaces con:
    ```
 
 4. **Configura FaustWP**
+
    ```
    - Vai su Impostazioni > Headless
    - Copia il "Secret Key"
@@ -34,12 +36,14 @@ Questo progetto è configurato per funzionare su GitHub Codespaces con:
    ```
 
 5. **Aggiorna .env.local**
+
    ```bash
    # Incolla la secret key copiata da WordPress
    FAUST_SECRET_KEY=la-tua-secret-key
    ```
 
 6. **Avvia Next.js**
+
    ```bash
    npm run dev
    ```
@@ -50,12 +54,12 @@ Questo progetto è configurato per funzionare su GitHub Codespaces con:
 
 ## 🔗 URLs
 
-| Servizio | URL | Descrizione |
-|----------|-----|-------------|
+| Servizio         | URL                   | Descrizione          |
+| ---------------- | --------------------- | -------------------- |
 | Next.js Frontend | http://localhost:3000 | Il tuo sito Faust.js |
-| WordPress | http://localhost:8080 | Admin WordPress |
-| phpMyAdmin | http://localhost:8081 | Gestione database |
-| MySQL | localhost:3306 | Database (interno) |
+| WordPress        | http://localhost:8080 | Admin WordPress      |
+| phpMyAdmin       | http://localhost:8081 | Gestione database    |
+| MySQL            | localhost:3306        | Database (interno)   |
 
 ## 🔐 Credenziali Database
 
@@ -86,7 +90,9 @@ npm run format
 ## 🐛 Troubleshooting
 
 ### Container creation errors
+
 Se ricevi errori durante la creazione dei container:
+
 ```bash
 # Rimuovi tutti i container e volumi esistenti
 docker compose -f .devcontainer/docker-compose.yml down -v
@@ -99,6 +105,7 @@ docker compose -f .devcontainer/docker-compose.yml ps
 ```
 
 ### WordPress non si avvia
+
 ```bash
 # Controlla i container Docker
 docker ps
@@ -108,12 +115,14 @@ docker compose -f .devcontainer/docker-compose.yml restart wordpress
 ```
 
 ### Database connection error
+
 ```bash
 # Riavvia il database
 docker compose -f .devcontainer/docker-compose.yml restart db
 ```
 
 ### Reset completo
+
 ```bash
 # Attenzione: cancella tutti i dati!
 docker compose -f .devcontainer/docker-compose.yml down -v
@@ -129,6 +138,7 @@ docker compose -f .devcontainer/docker-compose.yml down -v
 ## 🎨 Personalizzazione
 
 ### Aggiungi plugin WordPress
+
 1. Accedi a WordPress admin (http://localhost:8080/wp-admin)
 2. Installa i plugin necessari
 3. I plugin consigliati per headless:
@@ -137,6 +147,7 @@ docker compose -f .devcontainer/docker-compose.yml down -v
    - Advanced Custom Fields (ACF)
 
 ### Tema WordPress
+
 Non serve installare temi complessi - WordPress funziona solo come backend!
 
 ## 🔄 Workflow di Sviluppo

@@ -36,8 +36,4 @@ module.exports = withFaust({
     domains: getImageDomains(),
   },
   trailingSlash: true,
-  // Suppress hydration warnings for Faust components
-  experimental: {
-    suppressHydrationWarning: true,
-  },
 });

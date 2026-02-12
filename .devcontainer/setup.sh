@@ -14,8 +14,12 @@ else
     WP_URL="http://localhost:8080"
     SITE_URL="http://localhost:3000"
     PHPMYADMIN_URL="http://localhost:8081"
-    HEALTH_CHECK_URL="http://localhost:8090"
+    HEALTH_CHECK_URL="http://localhost:8080"
 fi
+
+# Export environment variables for docker-compose
+export NEXT_PUBLIC_WORDPRESS_URL="${WP_URL}"
+export NEXT_PUBLIC_SITE_URL="${SITE_URL}"
 
 # Create .env.local if it doesn't exist
 if [ ! -f .env.local ]; then
